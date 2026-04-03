@@ -1,59 +1,81 @@
 export default function Home() {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-zinc-950 font-sans p-4 sm:p-8">
-      {/* Background decoration */}
-      <div className="absolute top-1/2 left-1/2 -z-10 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-500/20 blur-[120px]" />
-      <div className="absolute top-1/4 left-1/4 -z-10 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-500/10 blur-[100px]" />
+    <div className="w-full min-h-screen bg-[#f0ebd9] font-sans font-bold text-black selection:bg-black selection:text-yellow-400 pb-16">
       
-      <main className="relative z-10 w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl sm:p-12">
-        <div className="flex flex-col items-center gap-6 text-center">
+      {/* Container */}
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-12 pt-12 md:pt-24 space-y-16 md:space-y-32">
+        
+        {/* 1. Hero Section */}
+        <header className="flex flex-col items-start gap-8">
+          <div className="inline-block border-4 border-black bg-[#ffea57] px-6 py-3 shadow-[6px_6px_0px_#000]">
+            <span className="text-xl md:text-3xl font-black uppercase tracking-widest">
+              Profile
+            </span>
+          </div>
           
-          {/* Profile Avatar */}
-          <div className="relative group">
-            <div className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 opacity-75 blur transition duration-500 group-hover:opacity-100 group-hover:duration-200"></div>
-            <div className="relative flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-2 border-zinc-800 bg-zinc-900 shadow-xl">
-              <span className="text-4xl font-black text-white/50 tracking-tighter">DH</span>
-            </div>
+          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[11rem] font-black leading-[0.9] tracking-tighter uppercase break-words w-full">
+            KIM DONG <br className="hidden sm:block" /> HYUN
+          </h1>
+          
+          <div className="flex flex-wrap gap-4 mt-4">
+             <div className="border-4 border-black bg-white px-8 py-4 shadow-[8px_8px_0px_#000] transform -rotate-1 hover:rotate-0 transition-transform">
+                <span className="text-2xl md:text-4xl font-bold uppercase italic">Software Engineer</span>
+             </div>
+             <div className="border-4 border-black bg-[#57ffd7] px-8 py-4 shadow-[8px_8px_0px_#000] transform rotate-2 hover:rotate-0 transition-transform hidden sm:block">
+                <span className="text-2xl md:text-4xl font-bold uppercase mt-1">Web Creator</span>
+             </div>
           </div>
+        </header>
 
-          {/* Name & Title */}
-          <div className="space-y-2 text-center">
-            <h1 className="bg-gradient-to-r from-zinc-100 to-zinc-500 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent sm:text-5xl">
-              김동현
-            </h1>
-            <p className="text-lg font-medium text-indigo-400">
-              Developer & Creator
+        {/* 2. Grid Sections (Bento Layout) */}
+        <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+          
+          {/* About Me Box : spans 2 cols on lg, 1 on md */}
+          <section className="lg:col-span-2 border-[6px] border-black bg-white p-8 md:p-16 shadow-[16px_16px_0px_#000] hover:-translate-y-2 hover:translate-x-2 hover:shadow-[8px_8px_0px_#000] transition-all">
+            <h2 className="text-5xl md:text-6xl font-black mb-10 pb-6 border-b-[6px] border-black uppercase text-black">
+              About Me
+            </h2>
+            <p className="text-xl md:text-3xl leading-relaxed font-bold break-keep">
+              아름답고 직관적인 사용자 경험을 단단하게 구축하는 프론트엔드/웹 개발자입니다. 복잡한 문제를 단순하게 풀어나가는 것을 즐기며, 극단적이고 강렬한 디자인 요소(Neobrutalism)를 적용하여 이 웹페이지 자체를 거대한 캔버스처럼 활용합니다.
             </p>
-          </div>
+          </section>
 
-          {/* Description */}
-          <p className="text-base text-zinc-400 leading-relaxed max-w-sm">
-            아름다운 웹 경험을 만드는 것에 열정을 가지고 있습니다. 문제를 해결하고 가치를 만드는 코드를 작성합니다.
-          </p>
+          {/* Contact Box : spans 1 col */}
+          <section className="border-[6px] border-black bg-[#ff5757] text-white p-8 md:p-16 shadow-[16px_16px_0px_#000] flex flex-col justify-between hover:-translate-y-2 hover:translate-x-2 hover:shadow-[8px_8px_0px_#000] transition-all">
+            <div>
+              <h2 className="text-5xl md:text-6xl font-black mb-10 uppercase text-black">
+                Contact
+              </h2>
+              <div className="flex flex-col gap-6">
+                <a href="#" className="border-4 border-black bg-white text-black px-6 py-5 text-center font-black text-2xl md:text-3xl hover:bg-black hover:text-white transition-colors cursor-pointer block border-b-8">
+                  Email Me
+                </a>
+                <a href="#" className="border-4 border-black bg-white text-black px-6 py-5 text-center font-black text-2xl md:text-3xl hover:bg-black hover:text-white transition-colors cursor-pointer block border-b-8">
+                  GitHub
+                </a>
+              </div>
+            </div>
+            <div className="mt-12 text-black font-black text-2xl uppercase tracking-wider text-center border-t-4 border-black pt-6">
+              Available For Hire
+            </div>
+          </section>
 
-          {/* Action Links */}
-          <div className="mt-4 flex w-full flex-col gap-3 sm:flex-row">
-            <a
-              href="#"
-              className="group relative flex w-full flex-1 items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 py-3 font-semibold text-white transition-all hover:bg-indigo-400 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 focus:ring-offset-zinc-900"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-              이메일 보내기
-            </a>
-            <a
-              href="#"
-              className="flex w-full flex-1 items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-800/50 px-4 py-3 font-medium text-zinc-200 transition-all hover:bg-zinc-700 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-zinc-600 focus:ring-offset-2 focus:ring-offset-zinc-900"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-              GitHub
-            </a>
-          </div>
-        </div>
-      </main>
+          {/* Tech Stack Box : spans full width on md and lg */}
+          <section className="md:col-span-2 lg:col-span-3 border-[6px] border-black bg-[#d757ff] p-8 md:p-16 shadow-[16px_16px_0px_#000] hover:-translate-y-2 hover:translate-x-2 hover:shadow-[8px_8px_0px_#000] transition-all">
+            <h2 className="text-5xl md:text-6xl font-black mb-12 uppercase text-black bg-white inline-block px-6 py-3 border-4 border-black shadow-[6px_6px_0px_#000]">
+              Skillset
+            </h2>
+            <div className="flex flex-wrap gap-5 mt-4">
+              {['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Figma', 'Node.js', 'PostgreSQL', 'GraphQL'].map((skill, i) => (
+                <div key={i} className="border-[4px] border-black bg-[#ffea57] text-black px-6 py-3 font-black text-2xl md:text-4xl shadow-[6px_6px_0px_#000] hover:bg-white hover:-translate-y-1 transition-all cursor-default">
+                  {skill}
+                </div>
+              ))}
+            </div>
+          </section>
 
-      <footer className="absolute bottom-6 text-sm text-zinc-500">
-        © {new Date().getFullYear()} 김동현. All rights reserved.
-      </footer>
+        </main>
+      </div>
     </div>
   );
 }
