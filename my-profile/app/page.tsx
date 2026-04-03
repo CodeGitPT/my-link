@@ -28,46 +28,47 @@ export default function Home() {
         </header>
 
         {/* 2. Grid Sections (Bento Layout) */}
-        <main className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+        {/* 2. Grid Sections (Bento Layout) */}
+        <main className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-12">
           
-          {/* About Me Box : spans 2 cols on lg, 1 on md */}
-          <section className="lg:col-span-2 border-[6px] border-black bg-white p-8 md:p-16 shadow-[16px_16px_0px_#000] hover:-translate-y-2 hover:translate-x-2 hover:shadow-[8px_8px_0px_#000] transition-all">
-            <h2 className="text-5xl md:text-6xl font-black mb-10 pb-6 border-b-[6px] border-black uppercase text-black">
+          {/* About Me Box : spans 2 cols until xl */}
+          <section className="md:col-span-2 border-[6px] border-black bg-white p-6 sm:p-8 xl:p-12 shadow-[12px_12px_0px_#000] hover:-translate-y-2 hover:translate-x-2 hover:shadow-[8px_8px_0px_#000] transition-all">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-8 pb-4 border-b-[6px] border-black uppercase text-black">
               About Me
             </h2>
-            <p className="text-xl md:text-3xl leading-relaxed font-bold break-keep">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl leading-relaxed font-bold break-keep">
               아름답고 직관적인 사용자 경험을 단단하게 구축하는 프론트엔드/웹 개발자입니다. 복잡한 문제를 단순하게 풀어나가는 것을 즐기며, 극단적이고 강렬한 디자인 요소(Neobrutalism)를 적용하여 이 웹페이지 자체를 거대한 캔버스처럼 활용합니다.
             </p>
           </section>
 
-          {/* Contact Box : spans 1 col */}
-          <section className="border-[6px] border-black bg-[#ff5757] text-white p-8 md:p-16 shadow-[16px_16px_0px_#000] flex flex-col justify-between hover:-translate-y-2 hover:translate-x-2 hover:shadow-[8px_8px_0px_#000] transition-all">
+          {/* Contact Box : spans 2 cols until xl, 1 col on xl */}
+          <section className="md:col-span-2 xl:col-span-1 border-[6px] border-black bg-[#ff5757] text-white p-6 sm:p-8 xl:p-12 shadow-[12px_12px_0px_#000] flex flex-col justify-between hover:-translate-y-2 hover:translate-x-2 hover:shadow-[8px_8px_0px_#000] transition-all">
             <div>
-              <h2 className="text-5xl md:text-6xl font-black mb-10 uppercase text-black">
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-8 uppercase text-black">
                 Contact
               </h2>
-              <div className="flex flex-col gap-6">
-                <a href="#" className="border-4 border-black bg-white text-black px-6 py-5 text-center font-black text-2xl md:text-3xl hover:bg-black hover:text-white transition-colors cursor-pointer block border-b-8">
+              <div className="flex flex-col sm:flex-row xl:flex-col gap-4 lg:gap-6">
+                <a href="#" className="flex-1 border-4 border-black bg-white text-black px-4 py-4 text-center font-black text-xl lg:text-2xl xl:text-3xl hover:bg-black hover:text-white transition-colors cursor-pointer block border-b-8">
                   Email Me
                 </a>
-                <a href="#" className="border-4 border-black bg-white text-black px-6 py-5 text-center font-black text-2xl md:text-3xl hover:bg-black hover:text-white transition-colors cursor-pointer block border-b-8">
+                <a href="#" className="flex-1 border-4 border-black bg-white text-black px-4 py-4 text-center font-black text-xl lg:text-2xl xl:text-3xl hover:bg-black hover:text-white transition-colors cursor-pointer block border-b-8">
                   GitHub
                 </a>
               </div>
             </div>
-            <div className="mt-12 text-black font-black text-2xl uppercase tracking-wider text-center border-t-4 border-black pt-6">
+            <div className="mt-8 lg:mt-10 xl:mt-12 text-black font-black text-xl md:text-3xl xl:text-2xl uppercase tracking-wider text-center border-t-4 border-black pt-6 break-words">
               Available For Hire
             </div>
           </section>
 
-          {/* Tech Stack Box : spans full width on md and lg */}
-          <section className="md:col-span-2 lg:col-span-3 border-[6px] border-black bg-[#d757ff] p-8 md:p-16 shadow-[16px_16px_0px_#000] hover:-translate-y-2 hover:translate-x-2 hover:shadow-[8px_8px_0px_#000] transition-all">
-            <h2 className="text-5xl md:text-6xl font-black mb-12 uppercase text-black bg-white inline-block px-6 py-3 border-4 border-black shadow-[6px_6px_0px_#000]">
+          {/* Tech Stack Box : spans full width */}
+          <section className="md:col-span-2 xl:col-span-3 border-[6px] border-black bg-[#d757ff] p-6 sm:p-8 xl:p-12 shadow-[12px_12px_0px_#000] hover:-translate-y-2 hover:translate-x-2 hover:shadow-[8px_8px_0px_#000] transition-all">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-8 uppercase text-black bg-white inline-block px-6 py-3 border-4 border-black shadow-[6px_6px_0px_#000]">
               Skillset
             </h2>
-            <div className="flex flex-wrap gap-5 mt-4">
+            <div className="flex flex-wrap gap-4 lg:gap-5 mt-4">
               {['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Figma', 'Node.js', 'PostgreSQL', 'GraphQL'].map((skill, i) => (
-                <div key={i} className="border-[4px] border-black bg-[#ffea57] text-black px-6 py-3 font-black text-2xl md:text-4xl shadow-[6px_6px_0px_#000] hover:bg-white hover:-translate-y-1 transition-all cursor-default">
+                <div key={i} className="border-[4px] border-black bg-[#ffea57] text-black px-5 py-2 font-black text-xl sm:text-2xl md:text-3xl shadow-[6px_6px_0px_#000] hover:bg-white hover:-translate-y-1 transition-all cursor-default">
                   {skill}
                 </div>
               ))}
