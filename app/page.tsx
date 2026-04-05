@@ -1,15 +1,24 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { dummyLinks } from "@/data/links"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Pencil } from "lucide-react"
+import { LinkAddDialog } from "@/components/link-add-dialog"
 
 export default function Page() {
-  const username = "Jane Doe"
-  const displayName = "janedoe"
+  const [links, setLinks] = useState(dummyLinks)
+  
+  const username = "Kim Donghyun"
+  const displayName = "kimdonghyun"
   const bio = "Digital nomad & UI/UX enthusiast. Building minimal things."
   const initials = username.split(' ').map(n => n[0]).join('')
+
+  const handleAddLink = (newLink: { title: string; url: string }) => {
+    const id = Date.now().toString()
+    setLinks([{ ...newLink, id }, ...links])
+  }
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-500 font-sans">
@@ -31,25 +40,35 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 w-full group/header">
-            <div className="flex items-center justify-center gap-2 translate-x-3.5">
-              <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
-                @{displayName}
+          <div className="flex flex-col gap-1 w-full group/header">
+            <div className="flex items-center justify-center gap-2">
+              <h1 className="text-4xl font-black tracking-tighter text-foreground drop-shadow-sm">
+                {username}
               </h1>
-              <Pencil className="w-4 h-4 text-muted-foreground/30 group-hover/header:text-muted-foreground/80 cursor-pointer transition-colors" />
             </div>
-            <div className="flex items-start justify-center gap-2 group/bio">
-               <p className="text-muted-foreground text-sm font-medium leading-relaxed max-w-[280px]">
+            <div className="flex items-center justify-center gap-2 mt-[-4px] group/handle">
+              <span className="text-sm font-bold tracking-widest text-muted-foreground/50 uppercase">
+                @{displayName}
+              </span>
+              <Pencil className="w-3.5 h-3.5 text-muted-foreground/0 group-hover/handle:text-muted-foreground/30 hover:!text-primary transition-all cursor-pointer" />
+            </div>
+            <div className="flex items-start justify-center gap-2 group/bio mt-2">
+               <p className="text-muted-foreground/80 text-sm font-medium leading-relaxed max-w-[280px]">
                 {bio}
               </p>
-              <Pencil className="w-3.5 h-3.5 text-muted-foreground/30 group-hover/bio:text-muted-foreground/80 cursor-pointer transition-colors shrink-0 mt-1" />
+              <Pencil className="w-3.5 h-3.5 text-muted-foreground/0 group-hover/bio:text-muted-foreground/30 hover:!text-primary transition-all cursor-pointer shrink-0 mt-1" />
             </div>
           </div>
         </header>
 
         {/* Link List Section */}
-        <nav className="flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 fill-mode-both">
-          {dummyLinks.map((link) => (
+        <nav className="flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 fill-mode-both mb-8">
+          {/* Add Link Dialog - Moved to Top */}
+          <div className="mb-4 animate-in fade-in slide-in-from-top-4 duration-1000 delay-300 fill-mode-both">
+            <LinkAddDialog onAdd={handleAddLink} />
+          </div>
+
+          {links.map((link) => (
             <a
               key={link.id}
               href={link.url}
