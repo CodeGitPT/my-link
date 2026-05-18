@@ -4,34 +4,46 @@ import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { dummyLinks } from "@/data/links"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { Pencil } from "lucide-react"
+import { Pencil, Loader2 } from "lucide-react"
 import { LinkAddDialog } from "@/components/link-add-dialog"
-import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "firebase/firestore"
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 
 export default function Page() {
-  const [links, setLinks] = useState<any[]>(dummyLinks)
+  const [links, setLinks] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
   
   const username = "Kim Donghyun"
   const displayName = "kimdonghyun"
   const bio = "Digital nomad & UI/UX enthusiast. Building minimal things."
   const initials = username.split(' ').map(n => n[0]).join('')
 
-  useEffect(() => {
-    const q = query(collection(db, "users", "anonymous", "links"), orderBy("createdAt", "desc"))
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const fetchedLinks = snapshot.docs.map(doc => ({
+  const fetchLinks = async () => {
+    setIsLoading(true)
+    try {
+      const q = query(collection(db, "users", "anonymous", "links"), orderBy("createdAt", "desc"))
+      
+      // 로컬이나 네트워크가 너무 빠르면 로딩 스피너가 깜빡이거나 안 보이는 현상을 방지하기 위해
+      // 최소 500ms 동안은 스피너를 유지하도록 Promise.all을 사용합니다.
+      const [querySnapshot] = await Promise.all([
+        getDocs(q),
+        new Promise(resolve => setTimeout(resolve, 500))
+      ])
+
+      const fetchedLinks = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }))
-      // If no links yet, we could fallback to dummyLinks or just show empty. Let's just use fetched.
-      if (fetchedLinks.length > 0) {
-        setLinks(fetchedLinks)
-      } else {
-        setLinks(dummyLinks) // fallback for now if empty
-      }
-    })
-    return () => unsubscribe()
+      setLinks(fetchedLinks)
+    } catch (error) {
+      console.error("Error fetching links:", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchLinks()
   }, [])
 
   const handleAddLink = async (newLink: { title: string; url: string }) => {
@@ -41,7 +53,7 @@ export default function Page() {
         ...newLink,
         createdAt: serverTimestamp()
       })
-      // Local state will be updated by onSnapshot, but we can do optimistic update if needed.
+      await fetchLinks() // 링크 추가 후 목록 수동 갱신
     } catch (error) {
       console.error("Error adding link to Firestore:", error)
     }
@@ -95,36 +107,46 @@ export default function Page() {
             <LinkAddDialog onAdd={handleAddLink} />
           </div>
 
-          {links.map((link) => (
-            <a
-              key={link.id}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.985]"
-            >
-              <Card className="overflow-hidden border-muted-foreground/15 shadow-sm hover:shadow-lg hover:border-primary/30 transition-all duration-300 bg-card/60 backdrop-blur-md">
-                 <CardHeader className="p-4 flex flex-row items-center gap-4 space-y-0">
-                  <div className="w-11 h-11 rounded-xl bg-muted/40 flex-shrink-0 flex items-center justify-center overflow-hidden border border-border/60 group-hover:border-primary/20 transition-colors shadow-inner">
-                    <img
-                      src={`https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}&sz=64`}
-                      alt=""
-                      className="w-6 h-6 object-contain grayscale-[0.3] group-hover:grayscale-0 transition-all duration-500"
-                      onError={(e) => {
-                         (e.target as HTMLImageElement).src = `https://avatar.vercel.sh/${new URL(link.url).hostname}`;
-                      }}
-                    />
-                  </div>
-                  <div className="flex-grow flex items-center justify-between gap-2">
-                    <CardTitle className="text-sm font-bold tracking-tight group-hover:text-primary transition-colors">
-                      {link.title}
-                    </CardTitle>
-                    <Pencil className="w-3.5 h-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/50 transition-all" />
-                  </div>
-                </CardHeader>
-              </Card>
-            </a>
-          ))}
+          {isLoading ? (
+            <div className="flex justify-center items-center py-8 w-full animate-in fade-in duration-500">
+              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground/50" />
+            </div>
+          ) : links.length > 0 ? (
+            links.map((link) => (
+              <a
+                key={link.id}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.985]"
+              >
+                <Card className="overflow-hidden border-muted-foreground/15 shadow-sm hover:shadow-lg hover:border-primary/30 transition-all duration-300 bg-card/60 backdrop-blur-md">
+                   <CardHeader className="p-4 flex flex-row items-center gap-4 space-y-0">
+                    <div className="w-11 h-11 rounded-xl bg-muted/40 flex-shrink-0 flex items-center justify-center overflow-hidden border border-border/60 group-hover:border-primary/20 transition-colors shadow-inner">
+                      <img
+                        src={`https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}&sz=64`}
+                        alt=""
+                        className="w-6 h-6 object-contain grayscale-[0.3] group-hover:grayscale-0 transition-all duration-500"
+                        onError={(e) => {
+                           (e.target as HTMLImageElement).src = `https://avatar.vercel.sh/${new URL(link.url).hostname}`;
+                        }}
+                      />
+                    </div>
+                    <div className="flex-grow flex items-center justify-between gap-2">
+                      <CardTitle className="text-sm font-bold tracking-tight group-hover:text-primary transition-colors">
+                        {link.title}
+                      </CardTitle>
+                      <Pencil className="w-3.5 h-3.5 text-muted-foreground/0 group-hover:text-muted-foreground/50 transition-all" />
+                    </div>
+                  </CardHeader>
+                </Card>
+              </a>
+            ))
+          ) : (
+            <div className="text-center py-8 text-muted-foreground/50 text-sm animate-in fade-in duration-500">
+              등록된 링크가 없습니다.
+            </div>
+          )}
         </nav>
 
         {/* Footer */}
