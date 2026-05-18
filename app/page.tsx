@@ -1,23 +1,50 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { dummyLinks } from "@/data/links"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Pencil } from "lucide-react"
 import { LinkAddDialog } from "@/components/link-add-dialog"
+import { collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "firebase/firestore"
+import { db } from "@/lib/firebase"
 
 export default function Page() {
-  const [links, setLinks] = useState(dummyLinks)
+  const [links, setLinks] = useState<any[]>(dummyLinks)
   
   const username = "Kim Donghyun"
   const displayName = "kimdonghyun"
   const bio = "Digital nomad & UI/UX enthusiast. Building minimal things."
   const initials = username.split(' ').map(n => n[0]).join('')
 
-  const handleAddLink = (newLink: { title: string; url: string }) => {
-    const id = Date.now().toString()
-    setLinks([{ ...newLink, id }, ...links])
+  useEffect(() => {
+    const q = query(collection(db, "users", "anonymous", "links"), orderBy("createdAt", "desc"))
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedLinks = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      // If no links yet, we could fallback to dummyLinks or just show empty. Let's just use fetched.
+      if (fetchedLinks.length > 0) {
+        setLinks(fetchedLinks)
+      } else {
+        setLinks(dummyLinks) // fallback for now if empty
+      }
+    })
+    return () => unsubscribe()
+  }, [])
+
+  const handleAddLink = async (newLink: { title: string; url: string }) => {
+    try {
+      const linksRef = collection(db, "users", "anonymous", "links")
+      await addDoc(linksRef, {
+        ...newLink,
+        createdAt: serverTimestamp()
+      })
+      // Local state will be updated by onSnapshot, but we can do optimistic update if needed.
+    } catch (error) {
+      console.error("Error adding link to Firestore:", error)
+    }
   }
 
   return (
