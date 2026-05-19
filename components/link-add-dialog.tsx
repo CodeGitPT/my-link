@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Plus, Link2, Type, AlertCircle } from "lucide-react"
+import { Plus, Link2, Type, AlertCircle, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -37,7 +37,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>
 
 interface LinkAddDialogProps {
-  onAdd: (link: { title: string; url: string }) => void
+  onAdd: (link: { title: string; url: string }) => Promise<void>
 }
 
 export function LinkAddDialog({ onAdd }: LinkAddDialogProps) {
@@ -57,13 +57,13 @@ export function LinkAddDialog({ onAdd }: LinkAddDialogProps) {
     },
   })
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     // Standardize URL
     const formattedUrl = data.url.startsWith("http") 
       ? data.url 
       : `https://${data.url}`
 
-    onAdd({
+    await onAdd({
       title: data.title,
       url: formattedUrl,
     })
@@ -170,7 +170,8 @@ export function LinkAddDialog({ onAdd }: LinkAddDialogProps) {
               disabled={!isValid || isSubmitting}
               className="w-full h-12 font-black text-sm uppercase tracking-wider shadow-xl shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-30 disabled:grayscale"
             >
-              {isSubmitting ? "추가 중..." : "링크 추가하기"}
+              {isSubmitting && <Loader2 className="w-5 h-5 mr-2 animate-spin" />}
+              링크 추가하기
             </Button>
           </DialogFooter>
         </form>
