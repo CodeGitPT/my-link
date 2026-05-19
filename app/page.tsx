@@ -65,7 +65,10 @@ export default function Page() {
   const handleUpdateLink = async (id: string, updatedData: { title: string; url: string }) => {
     try {
       const linkRef = doc(db, "users", "anonymous", "links", id)
-      await updateDoc(linkRef, updatedData)
+      await updateDoc(linkRef, {
+        ...updatedData,
+        updatedAt: serverTimestamp()
+      })
       await fetchLinks(true)
     } catch (error) {
       console.error("Error updating link:", error)
