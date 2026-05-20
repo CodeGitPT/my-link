@@ -39,8 +39,8 @@ type FormData = z.infer<typeof formSchema>
 
 interface LinkItemProps {
   link: { id: string; title: string; url: string }
-  onUpdate: (id: string, data: { title: string; url: string }) => Promise<void>
-  onDelete: (id: string) => Promise<void>
+  onUpdate?: (id: string, data: { title: string; url: string }) => Promise<void>
+  onDelete?: (id: string) => Promise<void>
 }
 
 export function LinkItem({ link, onUpdate, onDelete }: LinkItemProps) {
@@ -75,10 +75,12 @@ export function LinkItem({ link, onUpdate, onDelete }: LinkItemProps) {
         return
       }
 
-      await onUpdate(link.id, {
-        title: data.title,
-        url: formattedUrl,
-      })
+      if (onUpdate) {
+        await onUpdate(link.id, {
+          title: data.title,
+          url: formattedUrl,
+        })
+      }
       setIsEditing(false)
     } finally {
       setIsSubmitting(false)
@@ -93,7 +95,9 @@ export function LinkItem({ link, onUpdate, onDelete }: LinkItemProps) {
   const handleDeleteConfirm = async () => {
     setIsDeleting(true)
     try {
-      await onDelete(link.id)
+      if (onDelete) {
+        await onDelete(link.id)
+      }
     } finally {
       setIsDeleting(false)
       setIsDeleteModalOpen(false)
@@ -200,30 +204,36 @@ export function LinkItem({ link, onUpdate, onDelete }: LinkItemProps) {
         </a>
 
         {/* Action Buttons Container */}
-        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
-          <Button
-            size="icon"
-            variant="ghost"
-            className="w-8 h-8 rounded-full bg-background/50 backdrop-blur-xs border border-border/50 hover:bg-muted text-muted-foreground hover:text-primary transition-colors shadow-sm"
-            onClick={(e) => {
-              e.preventDefault()
-              setIsEditing(true)
-            }}
-          >
-            <Pencil className="w-3.5 h-3.5" />
-          </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="w-8 h-8 rounded-full bg-background/50 backdrop-blur-xs border border-border/50 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors shadow-sm"
-            onClick={(e) => {
-              e.preventDefault()
-              setIsDeleteModalOpen(true)
-            }}
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </Button>
-        </div>
+        {(onUpdate || onDelete) && (
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
+            {onUpdate && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="w-8 h-8 rounded-full bg-background/50 backdrop-blur-xs border border-border/50 hover:bg-muted text-muted-foreground hover:text-primary transition-colors shadow-sm"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setIsEditing(true)
+                }}
+              >
+                <Pencil className="w-3.5 h-3.5" />
+              </Button>
+            )}
+            {onDelete && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="w-8 h-8 rounded-full bg-background/50 backdrop-blur-xs border border-border/50 hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors shadow-sm"
+                onClick={(e) => {
+                  e.preventDefault()
+                  setIsDeleteModalOpen(true)
+                }}
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       <AlertDialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>

@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { Pencil, Loader2, LogOut, LogIn, Eye, Link } from "lucide-react"
+import { Pencil, Loader2, LogOut, LogIn, Eye, Link as LinkIcon } from "lucide-react"
 import { LinkAddDialog } from "@/components/link-add-dialog"
 import { LinkItem } from "@/components/link-item"
 import { auth } from "@/lib/firebase"
+import Link from "next/link"
 import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User } from "firebase/auth"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
@@ -159,9 +161,22 @@ export default function Page() {
       <div className="fixed top-0 left-0 right-0 z-10 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
         <div className="flex justify-between items-center max-w-2xl mx-auto w-full p-4">
           <div className="flex gap-2 items-center">
-          <span className="font-bold tracking-tight text-lg pl-2">MyLink</span>
+          <Link href="/" className="font-bold tracking-tight text-lg pl-2 hover:opacity-80 transition-opacity">MyLink</Link>
         </div>
         <div className="flex gap-1 items-center">
+          {user && (
+            <Link
+              href={`/${profile.displayName}`}
+              target="_blank"
+              className={cn(
+                buttonVariants({ variant: "default", size: "sm" }),
+                "hidden sm:flex mr-2 shadow-sm rounded-full font-semibold"
+              )}
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              내 페이지
+            </Link>
+          )}
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
@@ -184,7 +199,7 @@ export default function Page() {
                   <span>내 페이지 미리보기</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer" onClick={handleCopyLink}>
-                  <Link className="mr-2 h-4 w-4" />
+                  <LinkIcon className="mr-2 h-4 w-4" />
                   <span>내 페이지 링크 복사</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
