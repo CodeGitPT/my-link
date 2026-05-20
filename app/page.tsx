@@ -14,10 +14,10 @@ export default function Page() {
   const [links, setLinks] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<{ displayName: string; bio: string; handle: string }>({
-    displayName: "Guest",
+  const [profile, setProfile] = useState<{ username: string; bio: string; displayName: string }>({
+    username: "Guest",
     bio: "",
-    handle: "guest",
+    displayName: "guest",
   })
   
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function Page() {
         fetchLinks(false, currentUser.uid)
       } else {
         setLinks([])
-        setProfile({ displayName: "", bio: "", handle: "" })
+        setProfile({ username: "", bio: "", displayName: "" })
         setIsLoading(false)
       }
     })
@@ -42,15 +42,15 @@ export default function Page() {
       if (userSnap.exists()) {
         const data = userSnap.data()
         setProfile({
-          displayName: data.displayName || currentUser.displayName || "Guest",
+          username: data.username || currentUser.displayName || "Guest",
           bio: data.bio || "소개글을 입력해주세요.",
-          handle: data.handle || currentUser.email?.split('@')[0] || "guest"
+          displayName: data.displayName || currentUser.email?.split('@')[0] || "guest"
         })
       } else {
         const newProfile = {
-          displayName: currentUser.displayName || "Guest",
+          username: currentUser.displayName || "Guest",
           bio: "소개글을 입력해주세요.",
-          handle: currentUser.email?.split('@')[0] || "guest",
+          displayName: currentUser.email?.split('@')[0] || "guest",
           createdAt: serverTimestamp()
         }
         await setDoc(userRef, newProfile)
@@ -131,7 +131,11 @@ export default function Page() {
     const provider = new GoogleAuthProvider()
     try {
       await signInWithPopup(auth, provider)
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+        console.log("로그인 팝업이 닫혔습니다.")
+        return
+      }
       console.error("Login failed:", error)
     }
   }
@@ -144,7 +148,7 @@ export default function Page() {
     }
   }
 
-  const initials = profile.displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+  const initials = profile.username.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-500 font-sans">
@@ -223,13 +227,13 @@ export default function Page() {
               <div className="flex flex-col gap-1 w-full group/header">
                 <div className="flex items-center justify-center gap-2">
                   <h1 className="text-3xl font-black tracking-tighter text-foreground drop-shadow-sm cursor-text hover:bg-muted/50 px-3 py-1 rounded-md transition-colors">
-                    {profile.displayName}
+                    {profile.username}
                     <Pencil className="w-4 h-4 ml-2 inline-block text-muted-foreground/0 group-hover/header:text-muted-foreground/30 hover:!text-primary transition-all cursor-pointer" />
                   </h1>
                 </div>
                 <div className="flex items-center justify-center gap-2 mt-[-4px] group/handle">
                   <span className="text-sm font-bold tracking-widest text-muted-foreground/50 uppercase">
-                    @{profile.handle}
+                    @{profile.displayName}
                   </span>
                 </div>
                 <div className="flex items-start justify-center gap-2 group/bio mt-2 w-full">
