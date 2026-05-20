@@ -3,6 +3,8 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 
+import { getAuth } from "firebase/auth";
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -20,6 +22,9 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 // Initialize Firestore
 const db = getFirestore(app);
 
+// Initialize Auth
+const auth = getAuth(app);
+
 // Initialize Analytics conditionally (only supported in browser)
 let analytics;
 if (typeof window !== "undefined") {
@@ -30,4 +35,4 @@ if (typeof window !== "undefined") {
   });
 }
 
-export { app, analytics, db };
+export { app, analytics, db, auth };
