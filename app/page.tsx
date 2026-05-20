@@ -5,10 +5,11 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { Pencil, Loader2, LogOut, LogIn, Eye, Link } from "lucide-react"
 import { LinkAddDialog } from "@/components/link-add-dialog"
 import { LinkItem } from "@/components/link-item"
-import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc } from "firebase/firestore"
+import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc, where } from "firebase/firestore"
 import { db, auth } from "@/lib/firebase"
 import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User } from "firebase/auth"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
 
@@ -21,6 +22,62 @@ export default function Page() {
     bio: "",
     displayName: "guest",
   })
+  const [editingField, setEditingField] = useState<"username" | "bio" | "displayName" | null>(null)
+  const [editValue, setEditValue] = useState("")
+  
+  const checkDisplayNameUnique = async (newDisplayName: string) => {
+    if (!user) return false
+    const q = query(collection(db, "users"), where("displayName", "==", newDisplayName))
+    const snapshot = await getDocs(q)
+    if (snapshot.empty) return true
+    if (snapshot.docs.length === 1 && snapshot.docs[0].id === user.uid) return true
+    return false
+  }
+
+  const handleProfileUpdate = async () => {
+    if (!user || !editingField) return
+    
+    let finalValue = editValue.trim()
+    
+    if (editingField === "displayName") {
+      finalValue = finalValue.toLowerCase().replace(/[^a-z0-9_-]/g, '')
+      if (finalValue.length < 3) {
+        toast.error("마이링크 주소는 최소 3자 이상이어야 합니다.")
+        return
+      }
+      if (finalValue !== profile.displayName) {
+        const isUnique = await checkDisplayNameUnique(finalValue)
+        if (!isUnique) {
+          toast.error("이미 사용 중인 마이링크 주소입니다.")
+          return
+        }
+      }
+    } else if (editingField === "username") {
+      if (finalValue.length < 2) {
+        toast.error("이름은 최소 2자 이상이어야 합니다.")
+        return
+      }
+    }
+    
+    try {
+      const userRef = doc(db, "users", user.uid)
+      await updateDoc(userRef, { [editingField]: finalValue })
+      setProfile(prev => ({ ...prev, [editingField]: finalValue }))
+      setEditingField(null)
+      toast.success("프로필이 성공적으로 업데이트되었습니다.")
+    } catch (error) {
+      console.error("Error updating profile:", error)
+      toast.error("프로필 수정에 실패했습니다.")
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleProfileUpdate()
+    } else if (e.key === 'Escape') {
+      setEditingField(null)
+    }
+  }
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -258,21 +315,67 @@ export default function Page() {
               {/* Profile Info */}
               <div className="flex flex-col gap-1 w-full group/header">
                 <div className="flex items-center justify-center gap-2">
-                  <h1 className="text-3xl font-black tracking-tighter text-foreground drop-shadow-sm cursor-text hover:bg-muted/50 px-3 py-1 rounded-md transition-colors">
-                    {profile.username}
-                    <Pencil className="w-4 h-4 ml-2 inline-block text-muted-foreground/0 group-hover/header:text-muted-foreground/30 hover:!text-primary transition-all cursor-pointer" />
-                  </h1>
+                  {editingField === "username" ? (
+                    <Input
+                      autoFocus
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      onBlur={handleProfileUpdate}
+                      className="text-3xl font-black text-center h-12 w-[280px]"
+                    />
+                  ) : (
+                    <h1 
+                      className="text-3xl font-black tracking-tighter text-foreground drop-shadow-sm cursor-text hover:bg-muted/50 px-3 py-1 rounded-md transition-colors"
+                      onClick={() => { setEditingField("username"); setEditValue(profile.username); }}
+                    >
+                      {profile.username}
+                      <Pencil className="w-4 h-4 ml-2 inline-block text-muted-foreground/0 group-hover/header:text-muted-foreground/30 hover:!text-primary transition-all cursor-pointer" />
+                    </h1>
+                  )}
                 </div>
                 <div className="flex items-center justify-center gap-2 mt-[-4px] group/handle">
-                  <span className="text-sm font-bold tracking-widest text-muted-foreground/50 uppercase">
-                    @{profile.displayName}
-                  </span>
+                  {editingField === "displayName" ? (
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm font-bold text-muted-foreground/50">@</span>
+                      <Input
+                        autoFocus
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        onBlur={handleProfileUpdate}
+                        className="text-sm font-bold tracking-widest uppercase h-7 w-[180px] text-center"
+                      />
+                    </div>
+                  ) : (
+                    <span 
+                      className="text-sm font-bold tracking-widest text-muted-foreground/50 uppercase cursor-text hover:text-foreground transition-colors px-2 py-0.5 rounded-md hover:bg-muted/50"
+                      onClick={() => { setEditingField("displayName"); setEditValue(profile.displayName); }}
+                    >
+                      @{profile.displayName}
+                      <Pencil className="w-3 h-3 ml-1.5 inline-block text-muted-foreground/0 group-hover/handle:text-muted-foreground/40 hover:!text-primary transition-all cursor-pointer" />
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-start justify-center gap-2 group/bio mt-2 w-full">
-                   <p className="text-muted-foreground/80 text-sm font-medium leading-relaxed max-w-[280px] hover:bg-muted/50 px-3 py-2 rounded-md transition-colors cursor-text">
-                    {profile.bio}
-                    <Pencil className="w-3.5 h-3.5 inline-block ml-2 text-muted-foreground/0 group-hover/bio:text-muted-foreground/30 hover:!text-primary transition-all cursor-pointer shrink-0" />
-                  </p>
+                  {editingField === "bio" ? (
+                    <Input
+                      autoFocus
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      onBlur={handleProfileUpdate}
+                      className="text-sm font-medium text-center h-9 w-[280px]"
+                    />
+                  ) : (
+                    <p 
+                      className="text-muted-foreground/80 text-sm font-medium leading-relaxed max-w-[280px] hover:bg-muted/50 px-3 py-2 rounded-md transition-colors cursor-text"
+                      onClick={() => { setEditingField("bio"); setEditValue(profile.bio); }}
+                    >
+                      {profile.bio}
+                      <Pencil className="w-3.5 h-3.5 inline-block ml-2 text-muted-foreground/0 group-hover/bio:text-muted-foreground/30 hover:!text-primary transition-all cursor-pointer shrink-0" />
+                    </p>
+                  )}
                 </div>
               </div>
             </header>
