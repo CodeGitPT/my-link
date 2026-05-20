@@ -5,34 +5,33 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { Pencil, Loader2, LogOut, LogIn, Eye, Link } from "lucide-react"
 import { LinkAddDialog } from "@/components/link-add-dialog"
 import { LinkItem } from "@/components/link-item"
-import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, updateDoc, deleteDoc, getDoc, setDoc, where } from "firebase/firestore"
-import { db, auth } from "@/lib/firebase"
+import { auth } from "@/lib/firebase"
 import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User } from "firebase/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
+import { useProfile } from "@/hooks/useProfile"
+import { useLinks } from "@/hooks/useLinks"
 
 export default function Page() {
-  const [links, setLinks] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<{ username: string; bio: string; displayName: string }>({
-    username: "Guest",
-    bio: "",
-    displayName: "guest",
-  })
+  const [isAuthLoading, setIsAuthLoading] = useState(true)
   const [editingField, setEditingField] = useState<"username" | "bio" | "displayName" | null>(null)
   const [editValue, setEditValue] = useState("")
   
-  const checkDisplayNameUnique = async (newDisplayName: string) => {
-    if (!user) return false
-    const q = query(collection(db, "users"), where("displayName", "==", newDisplayName))
-    const snapshot = await getDocs(q)
-    if (snapshot.empty) return true
-    if (snapshot.docs.length === 1 && snapshot.docs[0].id === user.uid) return true
-    return false
-  }
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser)
+      setIsAuthLoading(false)
+    })
+    return () => unsubscribe()
+  }, [])
+
+  const { profile, isLoading: isProfileLoading, updateProfile, checkDisplayNameUnique } = useProfile(user)
+  const { links, isLoading: isLinksLoading, addLink, updateLink, deleteLink } = useLinks(user?.uid)
+
+  const isLoading = isAuthLoading || (user && (isProfileLoading || isLinksLoading))
 
   const handleProfileUpdate = async () => {
     if (!user || !editingField) return
@@ -65,11 +64,14 @@ export default function Page() {
     }
     
     try {
-      const userRef = doc(db, "users", user.uid)
-      await updateDoc(userRef, { [editingField]: finalValue })
-      setProfile(prev => ({ ...prev, [editingField]: finalValue }))
+      updateProfile({ field: editingField, value: finalValue })
+        .then(() => toast.success("프로필이 성공적으로 업데이트되었습니다."))
+        .catch((error) => {
+          console.error("Error updating profile:", error)
+          toast.error("프로필 수정에 실패했습니다.")
+        })
+        
       setEditingField(null)
-      toast.success("프로필이 성공적으로 업데이트되었습니다.")
     } catch (error) {
       console.error("Error updating profile:", error)
       toast.error("프로필 수정에 실패했습니다.")
@@ -83,111 +85,34 @@ export default function Page() {
       setEditingField(null)
     }
   }
-  
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser)
-      if (currentUser) {
-        await fetchProfile(currentUser)
-        fetchLinks(false, currentUser.uid)
-      } else {
-        setLinks([])
-        setProfile({ username: "", bio: "", displayName: "" })
-        setIsLoading(false)
-      }
-    })
-    return () => unsubscribe()
-  }, [])
-
-  const fetchProfile = async (currentUser: User) => {
-    try {
-      const userRef = doc(db, "users", currentUser.uid)
-      const userSnap = await getDoc(userRef)
-      if (userSnap.exists()) {
-        const data = userSnap.data()
-        setProfile({
-          username: data.username || currentUser.displayName || "Guest",
-          bio: data.bio || "소개글을 입력해주세요.",
-          displayName: data.displayName || currentUser.email?.split('@')[0] || "guest"
-        })
-      } else {
-        const newProfile = {
-          username: currentUser.displayName || "Guest",
-          bio: "소개글을 입력해주세요.",
-          displayName: currentUser.email?.split('@')[0] || "guest",
-          createdAt: serverTimestamp()
-        }
-        await setDoc(userRef, newProfile)
-        setProfile(newProfile as any)
-      }
-    } catch (error) {
-      console.error("Error fetching profile:", error)
-    }
-  }
-
-  const fetchLinks = async (silent = false, uid?: string) => {
-    const targetUid = uid || user?.uid
-    if (!targetUid) return
-
-    if (!silent) setIsLoading(true)
-    try {
-      const q = query(collection(db, "users", targetUid, "links"), orderBy("createdAt", "desc"))
-      
-      const promises: any[] = [getDocs(q)]
-      if (!silent) {
-        promises.push(new Promise(resolve => setTimeout(resolve, 500)))
-      }
-      
-      const [querySnapshot] = await Promise.all(promises)
-
-      const fetchedLinks = querySnapshot.docs.map((doc: any) => ({
-        id: doc.id,
-        ...doc.data()
-      }))
-      setLinks(fetchedLinks)
-    } catch (error) {
-      console.error("Error fetching links:", error)
-    } finally {
-      if (!silent) setIsLoading(false)
-    }
-  }
 
   const handleAddLink = async (newLink: { title: string; url: string }) => {
     if (!user) return
     try {
-      const linksRef = collection(db, "users", user.uid, "links")
-      await addDoc(linksRef, {
-        ...newLink,
-        createdAt: serverTimestamp()
-      })
-      await fetchLinks(true)
+      await addLink(newLink)
     } catch (error) {
-      console.error("Error adding link to Firestore:", error)
+      console.error("Error adding link:", error)
+      toast.error("링크 추가에 실패했습니다.")
     }
   }
 
   const handleUpdateLink = async (id: string, updatedData: { title: string; url: string }) => {
     if (!user) return
     try {
-      const linkRef = doc(db, "users", user.uid, "links", id)
-      await updateDoc(linkRef, {
-        ...updatedData,
-        updatedAt: serverTimestamp()
-      })
-      await fetchLinks(true)
+      await updateLink({ id, data: updatedData })
     } catch (error) {
       console.error("Error updating link:", error)
+      toast.error("링크 수정에 실패했습니다.")
     }
   }
 
   const handleDeleteLink = async (id: string) => {
     if (!user) return
     try {
-      const linkRef = doc(db, "users", user.uid, "links", id)
-      await deleteDoc(linkRef)
-      await fetchLinks(true)
+      await deleteLink(id)
     } catch (error) {
       console.error("Error deleting link:", error)
+      toast.error("링크 삭제에 실패했습니다.")
     }
   }
 
@@ -226,7 +151,7 @@ export default function Page() {
     }
   }
 
-  const initials = profile.username.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+  const initials = profile?.username?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || "GU"
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-500 font-sans">
@@ -425,5 +350,3 @@ export default function Page() {
     </div>
   )
 }
-
-

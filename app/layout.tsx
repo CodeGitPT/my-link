@@ -5,6 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
 import { Toaster } from "@/components/ui/sonner"
 
+import { Providers } from "@/app/providers"
+
 const geist = Geist({subsets:['latin'],variable:'--font-sans'})
 
 const fontMono = Geist_Mono({
@@ -30,8 +32,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster position="top-center" />
+          <Providers>
+            {children}
+            <Toaster position="top-center" />
+          </Providers>
         </ThemeProvider>
       </body>
     </html>
