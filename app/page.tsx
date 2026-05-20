@@ -39,6 +39,11 @@ export default function Page() {
     
     let finalValue = editValue.trim()
     
+    if (finalValue === profile[editingField]) {
+      setEditingField(null)
+      return
+    }
+    
     if (editingField === "displayName") {
       finalValue = finalValue.toLowerCase().replace(/[^a-z0-9_-]/g, '')
       if (finalValue.length < 3) {

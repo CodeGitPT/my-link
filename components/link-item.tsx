@@ -70,6 +70,11 @@ export function LinkItem({ link, onUpdate, onDelete }: LinkItemProps) {
         ? data.url
         : `https://${data.url}`
 
+      if (data.title === link.title && formattedUrl === link.url) {
+        setIsEditing(false)
+        return
+      }
+
       await onUpdate(link.id, {
         title: data.title,
         url: formattedUrl,
