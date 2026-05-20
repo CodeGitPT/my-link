@@ -9,6 +9,8 @@ import { collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, upda
 import { db, auth } from "@/lib/firebase"
 import { signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, User } from "firebase/auth"
 import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { toast } from "sonner"
 
 export default function Page() {
   const [links, setLinks] = useState<any[]>([])
@@ -148,34 +150,63 @@ export default function Page() {
     }
   }
 
+  const handlePreview = () => {
+    window.open(`/${profile.displayName}`, '_blank')
+  }
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/${profile.displayName}`)
+      toast.success("마이링크 주소가 복사되었습니다!")
+    } catch (err) {
+      console.error("Failed to copy:", err)
+      toast.error("링크 복사에 실패했습니다.")
+    }
+  }
+
   const initials = profile.username.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
 
   return (
     <div className="min-h-screen bg-background transition-colors duration-500 font-sans">
       {/* Top Bar */}
-      <div className="fixed top-0 left-0 right-0 p-4 flex justify-between items-center z-10 max-w-md mx-auto w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
-        <div className="flex gap-2 items-center">
-          {user ? (
-            <>
-              <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-foreground">
-                <LogOut className="w-4 h-4 mr-2" />
-                로그아웃
-              </Button>
-            </>
-          ) : (
-            <span className="font-bold tracking-tight text-lg pl-2">MyLink</span>
-          )}
+      <div className="fixed top-0 left-0 right-0 z-10 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
+        <div className="flex justify-between items-center max-w-2xl mx-auto w-full p-4">
+          <div className="flex gap-2 items-center">
+          <span className="font-bold tracking-tight text-lg pl-2">MyLink</span>
         </div>
         <div className="flex gap-1 items-center">
           {user && (
-            <>
-              <Button variant="ghost" size="icon" title="실제 화면 보기">
-                <Eye className="w-4 h-4 text-muted-foreground" />
-              </Button>
-              <Button variant="ghost" size="icon" title="내 링크 복사">
-                <Link className="w-4 h-4 text-muted-foreground" />
-              </Button>
-            </>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <div className="flex h-full w-full items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                  {initials}
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="flex items-center justify-start gap-2 p-2">
+                  <div className="flex flex-col space-y-1 leading-none">
+                    <p className="font-medium text-sm">{profile.username}</p>
+                    <p className="w-[200px] truncate text-xs text-muted-foreground">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer" onClick={handlePreview}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  <span>내 페이지 미리보기</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer" onClick={handleCopyLink}>
+                  <Link className="mr-2 h-4 w-4" />
+                  <span>내 페이지 링크 복사</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950" onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>로그아웃</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
           {!user && (
             <Button variant="outline" size="sm" onClick={handleLogin} className="mr-2">
@@ -185,9 +216,10 @@ export default function Page() {
           )}
           <ThemeToggle />
         </div>
+        </div>
       </div>
 
-      <main className="flex flex-col items-center justify-start p-6 pt-24 max-w-md mx-auto min-h-screen">
+      <main className="flex flex-col items-center justify-start p-6 pt-24 max-w-2xl mx-auto min-h-screen">
         {!user ? (
           // Logged Out State
           <div className="flex flex-col items-center justify-center h-[60vh] text-center gap-6 animate-in fade-in zoom-in duration-700 w-full">
