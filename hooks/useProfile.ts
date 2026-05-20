@@ -30,7 +30,7 @@ export function useProfile(user: User | null) {
         const newProfile = {
           username: user.displayName || "Guest",
           bio: "소개글을 입력해주세요.",
-          displayName: user.email?.split('@')[0] || "guest",
+          displayName: `${user.email?.split('@')[0] || "guest"}-${uid.substring(0, 6)}`.toLowerCase().replace(/[^a-z0-9_-]/g, ''),
           createdAt: serverTimestamp()
         }
         await setDoc(userRef, newProfile)
@@ -67,19 +67,9 @@ export function useProfile(user: User | null) {
     },
   })
 
-  const checkDisplayNameUnique = async (newDisplayName: string) => {
-    if (!uid) return false
-    const q = query(collection(db, "users"), where("displayName", "==", newDisplayName))
-    const snapshot = await getDocs(q)
-    if (snapshot.empty) return true
-    if (snapshot.docs.length === 1 && snapshot.docs[0].id === uid) return true
-    return false
-  }
-
   return {
     profile: profile || { username: "Guest", bio: "", displayName: "guest" },
     isLoading,
-    updateProfile: updateProfileMutation.mutateAsync,
-    checkDisplayNameUnique
+    updateProfile: updateProfileMutation.mutateAsync
   }
 }

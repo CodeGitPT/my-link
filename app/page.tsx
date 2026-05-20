@@ -30,7 +30,7 @@ export default function Page() {
     return () => unsubscribe()
   }, [])
 
-  const { profile, isLoading: isProfileLoading, updateProfile, checkDisplayNameUnique } = useProfile(user)
+  const { profile, isLoading: isProfileLoading, updateProfile } = useProfile(user)
   const { links, isLoading: isLinksLoading, addLink, updateLink, deleteLink } = useLinks(user?.uid)
 
   const isLoading = isAuthLoading || (user && (isProfileLoading || isLinksLoading))
@@ -45,20 +45,7 @@ export default function Page() {
       return
     }
     
-    if (editingField === "displayName") {
-      finalValue = finalValue.toLowerCase().replace(/[^a-z0-9_-]/g, '')
-      if (finalValue.length < 3) {
-        toast.error("마이링크 주소는 최소 3자 이상이어야 합니다.")
-        return
-      }
-      if (finalValue !== profile.displayName) {
-        const isUnique = await checkDisplayNameUnique(finalValue)
-        if (!isUnique) {
-          toast.error("이미 사용 중인 마이링크 주소입니다.")
-          return
-        }
-      }
-    } else if (editingField === "username") {
+    if (editingField === "username") {
       if (finalValue.length < 2) {
         toast.error("이름은 최소 2자 이상이어야 합니다.")
         return
@@ -279,28 +266,10 @@ export default function Page() {
                     </h1>
                   )}
                 </div>
-                <div className="flex items-center justify-center gap-2 mt-[-4px] group/handle">
-                  {editingField === "displayName" ? (
-                    <div className="flex items-center gap-1">
-                      <span className="text-sm font-bold text-muted-foreground/50">@</span>
-                      <Input
-                        autoFocus
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        onBlur={handleProfileUpdate}
-                        className="text-sm font-bold tracking-widest uppercase h-7 w-[180px] text-center"
-                      />
-                    </div>
-                  ) : (
-                    <span 
-                      className="text-sm font-bold tracking-widest text-muted-foreground/50 uppercase cursor-text hover:text-foreground transition-colors px-2 py-0.5 rounded-md hover:bg-muted/50"
-                      onClick={() => { setEditingField("displayName"); setEditValue(profile.displayName); }}
-                    >
-                      @{profile.displayName}
-                      <Pencil className="w-3 h-3 ml-1.5 inline-block text-muted-foreground/0 group-hover/handle:text-muted-foreground/40 hover:!text-primary transition-all cursor-pointer" />
-                    </span>
-                  )}
+                <div className="flex items-center justify-center gap-2 mt-[-4px]">
+                  <span className="text-sm font-bold tracking-widest text-muted-foreground/50 uppercase px-2 py-0.5">
+                    @{profile.displayName}
+                  </span>
                 </div>
                 <div className="flex items-start justify-center gap-2 group/bio mt-2 w-full">
                   {editingField === "bio" ? (
