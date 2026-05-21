@@ -121,44 +121,105 @@ export default function Page() {
     <div className="min-h-screen bg-background transition-colors duration-500 font-sans">
       <Header user={user} />
 
-      <main className="flex flex-col items-center justify-start p-6 pt-24 max-w-2xl mx-auto min-h-screen">
+      <main className={`flex flex-col items-center justify-start p-6 pt-24 mx-auto min-h-screen w-full ${!user ? "max-w-6xl" : "max-w-2xl"}`}>
         {!user ? (
           // Logged Out State
-          <div className="flex flex-col items-center justify-center h-[60vh] text-center gap-6 animate-in fade-in zoom-in duration-700 w-full">
-            <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <span className="text-4xl">👋</span>
+          <div className="w-full flex flex-col lg:flex-row items-center justify-center min-h-[70vh] gap-12 lg:gap-24 animate-in fade-in zoom-in duration-700">
+            {/* Left/Top Content */}
+            <div className="flex flex-col items-center lg:items-start text-center lg:text-left flex-1 gap-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                마이링크 베타 출시
+              </div>
+              
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-tight">
+                나만의 <br className="hidden lg:block"/>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">
+                  프로필 링크
+                </span>
+              </h1>
+              
+              <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-md">
+                모든 채널을 하나의 페이지로 연결하세요.<br />
+                구글 로그인만으로 단 1초 만에 시작할 수 있습니다.
+              </p>
+              
+              <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <Button onClick={handleLogin} size="lg" className="w-full sm:w-auto h-14 px-8 rounded-full font-bold text-lg shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/30 transition-all hover:-translate-y-1">
+                  <LogIn className="w-5 h-5 mr-2" />
+                  구글 계정으로 시작하기
+                </Button>
+              </div>
+              
+              <div className="mt-12 grid grid-cols-3 gap-6 opacity-60">
+                <div className="flex flex-col items-center lg:items-start gap-2">
+                  <span className="text-2xl font-black">Zero</span>
+                  <span className="text-xs font-medium">설정 시간</span>
+                </div>
+                <div className="flex flex-col items-center lg:items-start gap-2">
+                  <span className="text-2xl font-black">∞</span>
+                  <span className="text-xs font-medium">무제한 링크</span>
+                </div>
+                <div className="flex flex-col items-center lg:items-start gap-2">
+                  <span className="text-2xl font-black">Free</span>
+                  <span className="text-xs font-medium">완전 무료</span>
+                </div>
+              </div>
             </div>
-            <h1 className="text-4xl font-extrabold tracking-tight">마이링크</h1>
-            <p className="text-muted-foreground text-base leading-relaxed max-w-[280px]">
-              나만의 프로필 링크를 만들어보세요.<br/>
-              구글 로그인 후 바로 사용할 수 있습니다.
-            </p>
-            <Button onClick={handleLogin} size="lg" className="mt-8 w-full max-w-[280px] rounded-full font-semibold shadow-lg hover:shadow-xl transition-all">
-              <LogIn className="w-5 h-5 mr-2" />
-              구글로 시작하기
-            </Button>
+
+            {/* Right/Bottom Mockup */}
+            <div className="flex-1 w-full max-w-sm relative hidden md:block">
+              <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent blur-3xl rounded-full" />
+              <div className="relative bg-background border-4 border-border rounded-[2.5rem] shadow-2xl p-6 overflow-hidden h-[600px] flex flex-col items-center transform lg:rotate-[-2deg] lg:hover:rotate-0 transition-transform duration-500">
+                {/* Mobile Notch */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-6 bg-border rounded-b-xl" />
+                
+                <div className="mt-12 w-24 h-24 bg-gradient-to-br from-primary/80 to-primary/30 rounded-full flex items-center justify-center shadow-lg">
+                  <span className="text-4xl">👋</span>
+                </div>
+                
+                <div className="mt-6 w-32 h-5 bg-muted rounded-full" />
+                <div className="mt-3 w-40 h-3 bg-muted/50 rounded-full mb-10" />
+                
+                <div className="w-full flex flex-col gap-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="w-full h-16 bg-muted/30 rounded-2xl flex items-center px-4 hover:bg-muted/50 transition-colors cursor-pointer border border-border/50">
+                      <div className="w-10 h-10 bg-muted rounded-full mr-4" />
+                      <div className="flex-1 flex flex-col gap-2">
+                        <div className="w-28 h-3 bg-muted rounded-full" />
+                        <div className="w-20 h-2 bg-muted/50 rounded-full" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           // Logged In State
           <>
             {/* Header Section */}
-            <header className="flex flex-col items-center text-center gap-6 mb-10 w-full animate-in fade-in slide-in-from-top-4 duration-1000 ease-out">
+            <header className="flex flex-col items-center text-center gap-6 mb-12 w-full animate-in fade-in slide-in-from-top-4 duration-1000 ease-out">
               {/* Avatar */}
-              <div className="relative">
+              <div className="relative group/avatar">
+                <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 to-transparent blur-2xl rounded-full scale-[1.3] -z-10 opacity-70 group-hover/avatar:opacity-100 transition-opacity duration-500" />
                 {user.photoURL ? (
-                  <img src={user.photoURL} alt="Avatar" className="w-24 h-24 rounded-full object-cover shadow-2xl border-4 border-background ring-1 ring-border/50" />
+                  <img src={user.photoURL} alt="Avatar" className="w-28 h-28 rounded-full object-cover shadow-2xl shadow-primary/20 border-4 border-background ring-2 ring-primary/10 transition-transform hover:scale-105 duration-300" />
                 ) : (
-                  <div className="w-24 h-24 rounded-full bg-linear-to-br from-primary/90 to-primary/60 flex items-center justify-center text-primary-foreground text-3xl font-bold shadow-2xl border-4 border-background ring-1 ring-border/50">
+                  <div className="w-28 h-28 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-primary-foreground text-4xl font-black shadow-2xl shadow-primary/20 border-4 border-background ring-2 ring-primary/10 transition-transform hover:scale-105 duration-300">
                     {initials}
                   </div>
                 )}
-                <div className="absolute -bottom-1 -right-1 bg-background rounded-full p-1.5 shadow-md border border-border">
-                  <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse" />
+                <div className="absolute bottom-1 right-1 bg-background rounded-full p-1.5 shadow-lg border border-border/50">
+                  <div className="w-3.5 h-3.5 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.6)]" />
                 </div>
               </div>
 
               {/* Profile Info */}
-              <div className="flex flex-col gap-1 w-full group/header">
+              <div className="flex flex-col gap-2 w-full group/header">
                 <div className="flex items-center justify-center gap-2">
                   {editingField === "username" ? (
                     <Input
@@ -167,24 +228,24 @@ export default function Page() {
                       onChange={(e) => setEditValue(e.target.value)}
                       onKeyDown={handleKeyDown}
                       onBlur={handleProfileUpdate}
-                      className="text-3xl font-black text-center h-12 w-[280px]"
+                      className="text-4xl font-black text-center h-14 w-[320px] rounded-xl shadow-inner bg-muted/30"
                     />
                   ) : (
                     <h1 
-                      className="text-3xl font-black tracking-tighter text-foreground drop-shadow-sm cursor-text hover:bg-muted/50 px-3 py-1 rounded-md transition-colors"
+                      className="text-4xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-foreground to-foreground/70 drop-shadow-sm cursor-text hover:bg-muted/40 px-4 py-1.5 rounded-2xl transition-all"
                       onClick={() => { setEditingField("username"); setEditValue(profile.username); }}
                     >
                       {profile.username}
-                      <Pencil className="w-4 h-4 ml-2 inline-block text-muted-foreground/0 group-hover/header:text-muted-foreground/30 hover:!text-primary transition-all cursor-pointer" />
+                      <Pencil className="w-5 h-5 ml-2 inline-block text-muted-foreground/0 group-hover/header:text-muted-foreground/40 hover:!text-primary transition-all cursor-pointer" />
                     </h1>
                   )}
                 </div>
                 <div className="flex items-center justify-center gap-2 mt-[-4px]">
-                  <span className="text-sm font-bold tracking-widest text-muted-foreground/50 uppercase px-2 py-0.5">
+                  <span className="inline-flex items-center gap-1.5 text-sm font-bold tracking-widest text-primary/80 bg-primary/10 uppercase px-3 py-1 rounded-full">
                     @{profile.displayName}
                   </span>
                 </div>
-                <div className="flex items-start justify-center gap-2 group/bio mt-2 w-full">
+                <div className="flex items-start justify-center gap-2 group/bio mt-3 w-full">
                   {editingField === "bio" ? (
                     <Input
                       autoFocus
@@ -192,15 +253,15 @@ export default function Page() {
                       onChange={(e) => setEditValue(e.target.value)}
                       onKeyDown={handleKeyDown}
                       onBlur={handleProfileUpdate}
-                      className="text-sm font-medium text-center h-9 w-[280px]"
+                      className="text-base font-medium text-center h-11 w-[320px] rounded-xl shadow-inner bg-muted/30"
                     />
                   ) : (
                     <p 
-                      className="text-muted-foreground/80 text-sm font-medium leading-relaxed max-w-[280px] hover:bg-muted/50 px-3 py-2 rounded-md transition-colors cursor-text"
+                      className="text-muted-foreground/90 text-base font-medium leading-relaxed max-w-[320px] hover:bg-muted/40 px-4 py-2.5 rounded-2xl transition-all cursor-text"
                       onClick={() => { setEditingField("bio"); setEditValue(profile.bio); }}
                     >
                       {profile.bio}
-                      <Pencil className="w-3.5 h-3.5 inline-block ml-2 text-muted-foreground/0 group-hover/bio:text-muted-foreground/30 hover:!text-primary transition-all cursor-pointer shrink-0" />
+                      <Pencil className="w-4 h-4 inline-block ml-2 text-muted-foreground/0 group-hover/bio:text-muted-foreground/40 hover:!text-primary transition-all cursor-pointer shrink-0" />
                     </p>
                   )}
                 </div>
@@ -228,10 +289,13 @@ export default function Page() {
                   />
                 ))
               ) : (
-                <div className="text-center py-12 flex flex-col items-center border-2 border-dashed border-border rounded-xl animate-in fade-in duration-500 bg-muted/20">
-                  <div className="text-4xl mb-3">👻</div>
-                  <p className="text-muted-foreground font-medium mb-1">아직 등록된 링크가 없네요!</p>
-                  <p className="text-muted-foreground/60 text-sm">위의 버튼을 눌러 첫 번째 링크를 추가해보세요.</p>
+                <div className="text-center py-16 px-6 flex flex-col items-center bg-gradient-to-b from-muted/30 to-transparent border-2 border-dashed border-border/50 rounded-[2rem] animate-in fade-in zoom-in-95 duration-500 shadow-sm">
+                  <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 shadow-inner relative group cursor-default">
+                    <span className="absolute inset-0 bg-primary/20 rounded-full animate-ping opacity-20 group-hover:opacity-100 transition-opacity"></span>
+                    <span className="text-4xl relative z-10 group-hover:scale-110 transition-transform">👻</span>
+                  </div>
+                  <p className="text-foreground font-black text-2xl mb-2 tracking-tight">아직 등록된 링크가 없네요!</p>
+                  <p className="text-muted-foreground/80 text-base max-w-[280px] leading-relaxed font-medium">위의 버튼을 눌러 첫 번째 링크를 추가하고 나만의 페이지를 채워보세요.</p>
                 </div>
               )}
             </nav>
