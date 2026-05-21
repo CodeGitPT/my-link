@@ -10,14 +10,14 @@ export interface LinkData {
   createdAt?: any
 }
 
-export function useLinks(uid?: string) {
+export function useLinks(uid?: string, sortBy: 'createdAt' | 'clicks' = 'createdAt') {
   const queryClient = useQueryClient()
 
   const { data: links = [], isLoading } = useQuery({
-    queryKey: ['links', uid],
+    queryKey: ['links', uid, sortBy],
     queryFn: async () => {
       if (!uid) return []
-      const q = query(collection(db, "users", uid, "links"), orderBy("createdAt", "desc"))
+      const q = query(collection(db, "users", uid, "links"), orderBy(sortBy, "desc"))
       const querySnapshot = await getDocs(q)
       return querySnapshot.docs.map(doc => ({
         id: doc.id,
@@ -54,9 +54,9 @@ export function useLinks(uid?: string) {
     },
     onMutate: async ({ id, data }) => {
       await queryClient.cancelQueries({ queryKey: ['links', uid] })
-      const previousLinks = queryClient.getQueryData<LinkData[]>(['links', uid])
+      const previousLinks = queryClient.getQueryData<LinkData[]>(['links', uid, sortBy])
       if (previousLinks) {
-        queryClient.setQueryData<LinkData[]>(['links', uid], old => 
+        queryClient.setQueryData<LinkData[]>(['links', uid, sortBy], old => 
           old?.map(link => link.id === id ? { ...link, ...data } : link)
         )
       }
@@ -64,7 +64,7 @@ export function useLinks(uid?: string) {
     },
     onError: (err, variables, context) => {
       if (context?.previousLinks) {
-        queryClient.setQueryData(['links', uid], context.previousLinks)
+        queryClient.setQueryData(['links', uid, sortBy], context.previousLinks)
       }
     },
     onSettled: () => {
@@ -80,9 +80,9 @@ export function useLinks(uid?: string) {
     },
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: ['links', uid] })
-      const previousLinks = queryClient.getQueryData<LinkData[]>(['links', uid])
+      const previousLinks = queryClient.getQueryData<LinkData[]>(['links', uid, sortBy])
       if (previousLinks) {
-        queryClient.setQueryData<LinkData[]>(['links', uid], old => 
+        queryClient.setQueryData<LinkData[]>(['links', uid, sortBy], old => 
           old?.filter(link => link.id !== id)
         )
       }
@@ -90,7 +90,7 @@ export function useLinks(uid?: string) {
     },
     onError: (err, id, context) => {
       if (context?.previousLinks) {
-        queryClient.setQueryData(['links', uid], context.previousLinks)
+        queryClient.setQueryData(['links', uid, sortBy], context.previousLinks)
       }
     },
     onSettled: () => {
