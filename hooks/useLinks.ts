@@ -6,6 +6,7 @@ export interface LinkData {
   id: string
   title: string
   url: string
+  clicks?: number
   createdAt?: any
 }
 
@@ -32,9 +33,10 @@ export function useLinks(uid?: string) {
       const linksRef = collection(db, "users", uid, "links")
       const docRef = await addDoc(linksRef, {
         ...newLink,
+        clicks: 0,
         createdAt: serverTimestamp()
       })
-      return { id: docRef.id, ...newLink }
+      return { id: docRef.id, clicks: 0, ...newLink }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['links', uid] })

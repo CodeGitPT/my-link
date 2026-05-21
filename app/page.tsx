@@ -309,6 +309,7 @@ export default function Page() {
                   <LinkItem
                     key={link.id}
                     link={link}
+                    userId={user?.uid}
                     onUpdate={handleUpdateLink}
                     onDelete={handleDeleteLink}
                   />

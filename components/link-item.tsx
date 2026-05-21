@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { Pencil, Trash2, Check, X, AlertCircle, Loader2 } from "lucide-react"
+import { Pencil, Trash2, Check, X, AlertCircle, Loader2, MousePointerClick } from "lucide-react"
 import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,6 +20,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { doc, updateDoc, increment } from "firebase/firestore"
+import { db, auth } from "@/lib/firebase"
 
 const formSchema = z.object({
   title: z
@@ -38,12 +40,14 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>
 
 interface LinkItemProps {
-  link: { id: string; title: string; url: string }
+  link: { id: string; title: string; url: string; clicks?: number }
+  userId?: string
+  hideClicks?: boolean
   onUpdate?: (id: string, data: { title: string; url: string }) => Promise<void>
   onDelete?: (id: string) => Promise<void>
 }
 
-export function LinkItem({ link, onUpdate, onDelete }: LinkItemProps) {
+export function LinkItem({ link, userId, hideClicks, onUpdate, onDelete }: LinkItemProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -101,6 +105,16 @@ export function LinkItem({ link, onUpdate, onDelete }: LinkItemProps) {
     } finally {
       setIsDeleting(false)
       setIsDeleteModalOpen(false)
+    }
+  }
+
+  const handleLinkClick = () => {
+    const currentUserId = auth.currentUser?.uid
+    if (userId && currentUserId !== userId) {
+      const linkRef = doc(db, "users", userId, "links", link.id)
+      updateDoc(linkRef, {
+        clicks: increment(1)
+      }).catch(console.error)
     }
   }
 
@@ -181,6 +195,7 @@ export function LinkItem({ link, onUpdate, onDelete }: LinkItemProps) {
           target="_blank"
           rel="noopener noreferrer"
           className="block transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.985]"
+          onClick={handleLinkClick}
         >
           <Card className="overflow-hidden border-muted-foreground/15 shadow-sm hover:shadow-lg hover:border-primary/30 transition-all duration-300 bg-card/60 backdrop-blur-md">
             <CardHeader className="p-4 flex flex-row items-center gap-4 space-y-0 relative">
@@ -194,7 +209,7 @@ export function LinkItem({ link, onUpdate, onDelete }: LinkItemProps) {
                   }}
                 />
               </div>
-              <div className="flex-grow flex items-center justify-between gap-2 pr-16">
+              <div className="flex-grow flex items-center justify-between gap-2 pr-32">
                 <CardTitle className="text-sm font-bold tracking-tight group-hover:text-primary transition-colors truncate">
                   {link.title}
                 </CardTitle>
@@ -204,8 +219,14 @@ export function LinkItem({ link, onUpdate, onDelete }: LinkItemProps) {
         </a>
 
         {/* Action Buttons Container */}
-        {(onUpdate || onDelete) && (
+        {(onUpdate || onDelete || !hideClicks) && (
           <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
+            {!hideClicks && (
+              <div className="flex items-center gap-1 text-muted-foreground/60 text-[11px] font-medium shrink-0 bg-muted/50 px-2 py-0.5 rounded-full pointer-events-none">
+                <MousePointerClick className="w-3 h-3" />
+                <span className="font-semibold">{link.clicks || 0}</span>
+              </div>
+            )}
             {onUpdate && (
               <Button
                 size="icon"

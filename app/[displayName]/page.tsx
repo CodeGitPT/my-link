@@ -38,6 +38,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ displa
       id: doc.id,
       title: data.title,
       url: data.url,
+      clicks: data.clicks || 0,
     };
   });
   
@@ -90,6 +91,8 @@ export default async function ProfilePage({ params }: { params: Promise<{ displa
               <LinkItem
                 key={link.id}
                 link={link}
+                userId={userId}
+                hideClicks={true}
               />
             ))
           ) : (
