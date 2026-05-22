@@ -16,7 +16,7 @@ export default async function Image() {
         {/* Background decorative shape */}
         <div tw="absolute flex -top-[200px] -right-[100px] w-[800px] h-[800px] bg-indigo-50/50 rounded-full"></div>
         
-        <div tw="flex flex-col w-full pl-24 pt-8" style={{ zIndex: 10 }}>
+        <div tw="flex flex-col w-full pl-24 pt-8">
           <div tw="flex flex-col">
             <div tw="flex text-zinc-900 text-[100px] font-black tracking-tighter leading-none mb-6">
               나만의
@@ -33,7 +33,7 @@ export default async function Image() {
         </div>
         
         {/* Right Mockup UI */}
-        <div tw="absolute flex right-16 top-[15px] w-[360px] h-[600px] border-[12px] border-zinc-100 rounded-[3rem] bg-white shadow-2xl flex-col items-center pt-16 px-6" style={{ zIndex: 10 }}>
+        <div tw="absolute flex right-16 top-[15px] w-[360px] h-[600px] border-[12px] border-zinc-100 rounded-[3rem] bg-white shadow-2xl flex-col items-center pt-16 px-6">
            <div tw="flex w-24 h-24 bg-indigo-100 rounded-full items-center justify-center">
              <span tw="flex text-5xl">👋</span>
            </div>
@@ -41,25 +41,25 @@ export default async function Image() {
            <div tw="flex w-32 h-6 bg-zinc-200 rounded-full mt-10"></div>
            <div tw="flex w-48 h-4 bg-zinc-100 rounded-full mt-4 mb-12"></div>
            
-           <div tw="flex w-full flex-col gap-4">
-             <div tw="flex w-full h-20 bg-zinc-50 rounded-2xl border border-zinc-100 items-center px-4">
+           <div tw="flex w-full flex-col">
+             <div tw="flex w-full h-20 bg-zinc-50 rounded-2xl border border-zinc-100 items-center px-4 mb-4">
                 <div tw="flex w-12 h-12 bg-zinc-200 rounded-full mr-4"></div>
-                <div tw="flex flex-col gap-3">
-                  <div tw="flex w-24 h-3 bg-zinc-200 rounded-full"></div>
+                <div tw="flex flex-col">
+                  <div tw="flex w-24 h-3 bg-zinc-200 rounded-full mb-3"></div>
                   <div tw="flex w-16 h-2 bg-zinc-100 rounded-full"></div>
                 </div>
              </div>
-             <div tw="flex w-full h-20 bg-zinc-50 rounded-2xl border border-zinc-100 items-center px-4">
+             <div tw="flex w-full h-20 bg-zinc-50 rounded-2xl border border-zinc-100 items-center px-4 mb-4">
                 <div tw="flex w-12 h-12 bg-zinc-200 rounded-full mr-4"></div>
-                <div tw="flex flex-col gap-3">
-                  <div tw="flex w-32 h-3 bg-zinc-200 rounded-full"></div>
+                <div tw="flex flex-col">
+                  <div tw="flex w-32 h-3 bg-zinc-200 rounded-full mb-3"></div>
                   <div tw="flex w-20 h-2 bg-zinc-100 rounded-full"></div>
                 </div>
              </div>
              <div tw="flex w-full h-20 bg-zinc-50 rounded-2xl border border-zinc-100 items-center px-4">
                 <div tw="flex w-12 h-12 bg-zinc-200 rounded-full mr-4"></div>
-                <div tw="flex flex-col gap-3">
-                  <div tw="flex w-20 h-3 bg-zinc-200 rounded-full"></div>
+                <div tw="flex flex-col">
+                  <div tw="flex w-20 h-3 bg-zinc-200 rounded-full mb-3"></div>
                   <div tw="flex w-12 h-2 bg-zinc-100 rounded-full"></div>
                 </div>
              </div>
