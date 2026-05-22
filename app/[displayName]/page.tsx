@@ -1,3 +1,4 @@
+import { Metadata, ResolvingMetadata } from "next"
 import { collection, query, where, getDocs, orderBy } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { notFound } from "next/navigation"
@@ -6,6 +7,45 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import Link from "next/link"
 
 export const revalidate = 0 // Disable cache for real-time updates, or use dynamic = 'force-dynamic'
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ displayName: string }> },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { displayName } = await params;
+  
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, where("displayName", "==", displayName));
+  const querySnapshot = await getDocs(q);
+  
+  if (querySnapshot.empty) {
+    return {
+      title: "페이지를 찾을 수 없습니다",
+    }
+  }
+  
+  const userData = querySnapshot.docs[0].data();
+  const title = `${userData.username}`;
+  const description = userData.bio || `${userData.username}님의 프로필 링크 모음입니다.`;
+  
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "profile",
+      url: `/${userData.displayName}`,
+      images: userData.photoURL ? [{ url: userData.photoURL }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: userData.photoURL ? [userData.photoURL] : undefined,
+    }
+  }
+}
 
 export default async function ProfilePage({ params }: { params: Promise<{ displayName: string }> }) {
   const { displayName } = await params;

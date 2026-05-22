@@ -127,14 +127,7 @@ export default function Page() {
           <div className="w-full flex flex-col lg:flex-row items-center justify-center min-h-[70vh] gap-12 lg:gap-24 animate-in fade-in zoom-in duration-700">
             {/* Left/Top Content */}
             <div className="flex flex-col items-center lg:items-start text-center lg:text-left flex-1 gap-6">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                </span>
-                마이링크 베타 출시
-              </div>
-              
+
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-tight">
                 나만의 <br className="hidden lg:block"/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">
