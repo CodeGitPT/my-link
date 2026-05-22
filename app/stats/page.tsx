@@ -63,7 +63,7 @@ export default function StatsPage() {
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary/5 via-background to-background p-6 font-sans relative overflow-hidden">
       <Header user={user} />
-      
+
       {/* Decorative Blur Backgrounds */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/20 blur-[120px]" />
@@ -129,20 +129,20 @@ export default function StatsPage() {
                 <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <defs>
                     <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="var(--color-clicks)" stopOpacity={1}/>
-                      <stop offset="95%" stopColor="var(--color-clicks)" stopOpacity={0.3}/>
+                      <stop offset="5%" stopColor="var(--color-clicks)" stopOpacity={1} />
+                      <stop offset="95%" stopColor="var(--color-clicks)" stopOpacity={0.3} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted))" />
-                  <XAxis 
-                    dataKey="title" 
+                  <XAxis
+                    dataKey="title"
                     stroke="hsl(var(--muted-foreground))"
                     fontSize={12}
                     tickLine={false}
                     axisLine={false}
                     tickFormatter={(value) => value.length > 10 ? value.substring(0, 10) + "..." : value}
                   />
-                  <YAxis 
+                  <YAxis
                     stroke="hsl(var(--muted-foreground))"
                     fontSize={12}
                     tickLine={false}
