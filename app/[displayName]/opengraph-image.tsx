@@ -20,24 +20,24 @@ export default async function Image({ params }: { params: Promise<{ displayName:
         <div tw="absolute flex bottom-[50px] left-[50px] w-[300px] h-[300px] bg-indigo-50/30 rounded-full"></div>
         
         <div tw="flex flex-col w-full pl-24 pt-8">
-          <div tw="flex mb-8">
-             <div tw="flex items-center justify-center rounded-full bg-indigo-100/50 border border-indigo-100 px-6 py-2">
-               <span tw="flex text-indigo-600 text-xl font-bold tracking-widest uppercase">MyLink Profile</span>
+          <div tw="flex mb-12">
+             <div tw="flex items-center justify-center rounded-full bg-indigo-50 border border-indigo-100 px-6 py-2.5 shadow-sm">
+               <span tw="flex text-indigo-600 text-lg font-bold tracking-widest uppercase">MyLink Profile</span>
              </div>
           </div>
 
           <div tw="flex flex-col">
-            <div tw="flex text-zinc-900 text-[100px] font-black tracking-tighter leading-none mb-6">
-              @{displayName}
+            <div tw="flex text-indigo-600 text-[36px] font-bold tracking-tight mb-4">
+              공식 프로필 링크
             </div>
-            <div tw="flex text-indigo-600 text-[70px] font-black tracking-tighter leading-none">
-              프로필 링크 모음
+            <div tw="flex text-zinc-800 text-[80px] font-extrabold tracking-tighter leading-tight">
+              @{displayName}
             </div>
           </div>
           
-          <div tw="flex flex-col text-zinc-500 text-[32px] mt-12 font-medium leading-normal max-w-2xl tracking-tight">
-            <div tw="flex mb-2">모든 채널을 하나의 페이지로.</div>
-            <div tw="flex">지금 바로 방문해서 확인해보세요.</div>
+          <div tw="flex flex-col text-zinc-500 text-[36px] mt-10 font-medium leading-relaxed tracking-tight">
+            <div tw="flex">모든 채널과 링크를 하나의 페이지에서</div>
+            <div tw="flex mt-2">쉽고 빠르게 만나보세요.</div>
           </div>
         </div>
         
