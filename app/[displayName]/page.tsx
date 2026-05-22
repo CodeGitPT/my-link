@@ -36,13 +36,11 @@ export async function generateMetadata(
       description,
       type: "profile",
       url: `/${userData.displayName}`,
-      images: userData.photoURL ? [{ url: userData.photoURL }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: userData.photoURL ? [userData.photoURL] : undefined,
     }
   }
 }
