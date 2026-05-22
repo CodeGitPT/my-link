@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og'
 
 export const runtime = 'edge'
 
-export const alt = 'MyLink - 나만의 프로필 링크'
+export const alt = 'MyLink - 세상에서 가장 심플한 나만의 프로필 링크'
 export const size = {
   width: 1200,
   height: 630,

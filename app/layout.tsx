@@ -16,24 +16,25 @@ const fontMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://mylink.com"), // TODO: 실제 배포될 도메인으로 변경하세요
+  metadataBase: new URL(process.env.NODE_ENV === "production" ? "https://my-link-three-chi.vercel.app" : "http://localhost:3000"),
   title: {
     template: "%s | MyLink",
     default: "MyLink - 나만의 프로필 링크",
   },
-  description: "나만의 프로필 링크를 만들어 모든 채널을 하나의 페이지로 연결하세요. 구글 로그인으로 1초 만에 시작할 수 있습니다.",
-  keywords: ["링크트리", "프로필 링크", "멀티링크", "MyLink", "링크 모음", "바이오 링크"],
+  description: "나만의 프로필 링크를 만들어 모든 채널을 하나의 페이지로 연결하세요. 구글 로그인으로 1초 만에 무료로 시작할 수 있습니다.",
+  keywords: ["링크트리", "프로필 링크", "멀티링크", "MyLink", "링크 모음", "바이오 링크", "인스타그램 링크", "크리에이터 링크"],
   openGraph: {
-    title: "MyLink - 나만의 프로필 링크",
-    description: "모든 채널을 하나의 페이지로 연결하세요. 단 1초 만에 시작하는 나만의 프로필 링크.",
+    title: "MyLink - 세상에서 가장 심플한 나만의 프로필 링크",
+    description: "내 모든 채널을 하나의 페이지에 담아보세요. 구글 로그인만으로 단 1초 만에 나만의 프로필 링크를 완성할 수 있습니다.",
     type: "website",
     locale: "ko_KR",
     siteName: "MyLink",
+    url: "https://my-link-three-chi.vercel.app",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MyLink - 나만의 프로필 링크",
-    description: "모든 채널을 하나의 페이지로 연결하세요. 단 1초 만에 시작하는 나만의 프로필 링크.",
+    title: "MyLink - 세상에서 가장 심플한 나만의 프로필 링크",
+    description: "내 모든 채널을 하나의 페이지에 담아보세요. 구글 로그인만으로 단 1초 만에 나만의 프로필 링크를 완성할 수 있습니다.",
   },
   icons: {
     icon: "/favicon.ico",
